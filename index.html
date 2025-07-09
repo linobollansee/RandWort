@@ -42,10 +42,17 @@
 
     function createWordHTML(word) {
       const encodedWord = encodeURIComponent(word);
+
+      // Links sorted by priority: quick translations first, then dictionaries, then examples & corpora
       const deeplUrl = `https://www.deepl.com/en/translator#de/en-us/${encodedWord}`;
       const googleUrl = `https://translate.google.com/?sl=de&tl=en&text=${encodedWord}&op=translate`;
       const reversoUrl = `https://www.reverso.net/Text%C3%BCbersetzung#sl=ger&tl=eng&text=${encodedWord}`;
+      const dudenUrl = `https://www.duden.de/rechtschreibung/${encodedWord}`;
+      const wiktionaryUrl = `https://de.wiktionary.org/wiki/${encodedWord}`;
       const dwdsUrl = `https://www.dwds.de/?q=${encodedWord}&from=wb`;
+      const lingueeUrl = `https://www.linguee.com/german-english/search?source=auto&query=${encodedWord}`;
+      const leoUrl = `https://dict.leo.org/german-english/${encodedWord}`;
+      const ponsUrl = `https://en.pons.com/translate/german-english/${encodedWord}`;
 
       return `
         <div class="word-container">
@@ -54,7 +61,12 @@
             <a href="${deeplUrl}" target="_blank" rel="noopener noreferrer">DeepL</a>
             <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">Google Translate</a>
             <a href="${reversoUrl}" target="_blank" rel="noopener noreferrer">Reverso</a>
+            <a href="${dudenUrl}" target="_blank" rel="noopener noreferrer">Duden</a>
+            <a href="${wiktionaryUrl}" target="_blank" rel="noopener noreferrer">Wiktionary</a>
             <a href="${dwdsUrl}" target="_blank" rel="noopener noreferrer">DWDS</a>
+            <a href="${lingueeUrl}" target="_blank" rel="noopener noreferrer">Linguee</a>
+            <a href="${leoUrl}" target="_blank" rel="noopener noreferrer">Leo</a>
+            <a href="${ponsUrl}" target="_blank" rel="noopener noreferrer">PONS</a>
           </div>
         </div>
       `;
