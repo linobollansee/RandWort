@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Random German Words Translator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      overflow: hidden; /* prevent scrolling */
+      height: 100vh; /* viewport height */
+      box-sizing: border-box;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 12px;
+    }
+    #word-list {
+      font-weight: bold;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: normal;
+      /* keep it inside the viewport */
+      max-height: calc(100vh - 100px); /* allow some space for header and button */
+      overflow: hidden;
+    }
+    #reload {
+      margin-top: 20px;
+      padding: 8px 12px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random German Words Filling Screen</h1>
+  <div id="word-list">Loading words…</div>
+  <button id="reload">Reload</button>
+
+  <script>
+    let germanWords = [];
+
+    async function fetchWordList() {
+      try {
+        const response = await fetch('wordlist-german.txt');
+        if (!response.ok) throw new Error('Failed to load word list');
+        const text = await response.text();
+        germanWords = text
+          .split(/\r?\n/)
+          .map(word => word.trim())
+          .filter(word => word.length > 0);
+      } catch (error) {
+        document.getElementById('word-list').innerHTML = `<p style="color:red;">Error loading word list: ${error.message}</p>`;
+      }
+    }
+
+    function pickRandomWords(arr, count) {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    function estimateWordsCount() {
+      // Create a hidden span with average word length to estimate size
+      const testSpan = document.createElement('span');
+      testSpan.style.visibility = 'hidden';
+      testSpan.style.position = 'absolute';
+      testSpan.style.whiteSpace = 'nowrap';
+      testSpan.style.fontWeight = 'bold';
+      testSpan.textContent = 'Beispiel'; // average length German word
+      document.body.appendChild(testSpan);
+
+      const wordWidth = testSpan.offsetWidth;
+      const wordHeight = testSpan.offsetHeight;
+
+      document.body.removeChild(testSpan);
+
+      // Calculate how many words fit horizontally and vertically (accounting for commas and spaces)
+      const availableWidth = window.innerWidth - 40; // padding from body (20px each side)
+      const availableHeight = window.innerHeight - 140; // header + button + some margin
+
+      // Each word + comma + space estimated width: add ~10px for ", "
+      const wordPlusCommaWidth = wordWidth + 10;
+
+      const wordsPerLine = Math.floor(availableWidth / wordPlusCommaWidth);
+      const lines = Math.floor(availableHeight / wordHeight);
+
+      return wordsPerLine * lines;
+    }
+
+    function displayWords() {
+      if (germanWords.length === 0) {
+        document.getElementById('word-list').innerHTML = 'No words loaded.';
+        return;
+      }
+
+      const count = estimateWordsCount();
+      const selected = pickRandomWords(germanWords, count);
+
+      // join with comma + space
+      document.getElementById('word-list').textContent = selected.join(', ');
+    }
+
+    document.getElementById('reload').addEventListener('click', displayWords);
+
+    window.onload = async () => {
+      await fetchWordList();
+      displayWords();
+    };
+
+    // Optional: recalc on window resize to avoid scrolls if window changes size
+    window.onresize = () => {
+      displayWords();
+    };
+  </script>
+</body>
+</html>
