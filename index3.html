@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Random German Words Translator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1 {
+      color: #333;
+      margin: 0 0 12px 0;
+      flex-shrink: 0;
+    }
+    #word-list {
+      font-weight: bold;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: normal;
+      flex-grow: 1;
+      overflow-y: auto; /* scroll if needed */
+      padding-right: 10px; /* avoid clipping behind scrollbar */
+    }
+    #word-list a {
+      color: #007BFF;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #word-list a:hover {
+      text-decoration: underline;
+    }
+    #reload {
+      margin-top: 12px;
+      padding: 8px 12px;
+      flex-shrink: 0;
+      align-self: flex-start;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random German Words Filling Screen</h1>
+  <div id="word-list">Loading words…</div>
+  <button id="reload">Reload</button>
+
+  <script>
+    let germanWords = [];
+
+    async function fetchWordList() {
+      try {
+        const response = await fetch('wordlist-german.txt');
+        if (!response.ok) throw new Error('Failed to load word list');
+        const text = await response.text();
+        germanWords = text
+          .split(/\r?\n/)
+          .map(word => word.trim())
+          .filter(word => word.length > 0);
+      } catch (error) {
+        document.getElementById('word-list').innerHTML = `<p style="color:red;">Error loading word list: ${error.message}</p>`;
+      }
+    }
+
+    function pickRandomWords(arr, count) {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    function createClickableWord(word) {
+      const encodedWord = encodeURIComponent(word);
+      const url = `https://www.duden.de/rechtschreibung/${encodedWord}`;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${word}</a>`;
+    }
+
+    function displayWords() {
+      if (germanWords.length === 0) {
+        document.getElementById('word-list').innerHTML = 'No words loaded.';
+        return;
+      }
+
+      const count = 150;
+      const selected = pickRandomWords(germanWords, count);
+
+      // join clickable words with comma + space
+      document.getElementById('word-list').innerHTML = selected
+        .map(createClickableWord)
+        .join(', ');
+    }
+
+    document.getElementById('reload').addEventListener('click', displayWords);
+
+    window.onload = async () => {
+      await fetchWordList();
+      displayWords();
+    };
+  </script>
+</body>
+</html>
