@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Random German Words Translator</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
@@ -14,7 +14,7 @@
   </style>
 </head>
 <body>
-  <h1>20 Random German Words</h1>
+  <h1>10 Random German Words</h1>
   <div id="word-list">Loading words…</div>
   <button id="reload">Reload</button>
 
@@ -42,7 +42,7 @@
 
     function createWordHTML(word) {
       const encodedWord = encodeURIComponent(word);
-      const deeplUrl = `https://www.deepl.com/translator#sl=de&tl=en&text=${encodedWord}`;
+      const deeplUrl = `https://www.deepl.com/en/translator#de/en-us/${encodedWord}`;
       const googleUrl = `https://translate.google.com/?sl=de&tl=en&text=${encodedWord}&op=translate`;
       const reversoUrl = `https://www.reverso.net/Text%C3%BCbersetzung#sl=ger&tl=eng&text=${encodedWord}`;
 
@@ -50,9 +50,9 @@
         <div class="word-container">
           <span class="word">${word}</span>
           <div class="links">
-            <a href="${deeplUrl}" target="_blank">DeepL</a>
-            <a href="${googleUrl}" target="_blank">Google Translate</a>
-            <a href="${reversoUrl}" target="_blank">Reverso</a>
+            <a href="${deeplUrl}" target="_blank" rel="noopener noreferrer">DeepL</a>
+            <a href="${googleUrl}" target="_blank" rel="noopener noreferrer">Google Translate</a>
+            <a href="${reversoUrl}" target="_blank" rel="noopener noreferrer">Reverso</a>
           </div>
         </div>
       `;
@@ -63,7 +63,7 @@
         document.getElementById('word-list').innerHTML = 'No words loaded.';
         return;
       }
-      const selected = pickRandomWords(germanWords, 20);
+      const selected = pickRandomWords(germanWords, 10);
       document.getElementById('word-list').innerHTML = selected.map(createWordHTML).join('');
     }
 
