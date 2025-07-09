@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Random German Words Translator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: #333; }
+    .word-container { margin-bottom: 12px; }
+    .word { font-weight: bold; }
+    .links a { margin-right: 8px; text-decoration: none; color: #007BFF; }
+    .links a:hover { text-decoration: underline; }
+    #reload { margin-top: 20px; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>20 Random German Words</h1>
+  <div id="word-list">Loading words…</div>
+  <button id="reload">Reload</button>
+
+  <script>
+    let germanWords = [];
+
+    async function fetchWordList() {
+      try {
+        const response = await fetch('wordlist-german.txt');
+        if (!response.ok) throw new Error('Failed to load word list');
+        const text = await response.text();
+        germanWords = text
+          .split(/\r?\n/)
+          .map(word => word.trim())
+          .filter(word => word.length > 0);
+      } catch (error) {
+        document.getElementById('word-list').innerHTML = `<p style="color:red;">Error loading word list: ${error.message}</p>`;
+      }
+    }
+
+    function pickRandomWords(arr, count) {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    function createWordHTML(word) {
+      const encodedWord = encodeURIComponent(word);
+      const deeplUrl = `https://www.deepl.com/translator#sl=de&tl=en&text=${encodedWord}`;
+      const googleUrl = `https://translate.google.com/?sl=de&tl=en&text=${encodedWord}&op=translate`;
+      const reversoUrl = `https://www.reverso.net/Text%C3%BCbersetzung#sl=ger&tl=eng&text=${encodedWord}`;
+
+      return `
+        <div class="word-container">
+          <span class="word">${word}</span>
+          <div class="links">
+            <a href="${deeplUrl}" target="_blank">DeepL</a>
+            <a href="${googleUrl}" target="_blank">Google Translate</a>
+            <a href="${reversoUrl}" target="_blank">Reverso</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function displayWords() {
+      if (germanWords.length === 0) {
+        document.getElementById('word-list').innerHTML = 'No words loaded.';
+        return;
+      }
+      const selected = pickRandomWords(germanWords, 20);
+      document.getElementById('word-list').innerHTML = selected.map(createWordHTML).join('');
+    }
+
+    document.getElementById('reload').addEventListener('click', displayWords);
+
+    window.onload = async () => {
+      await fetchWordList();
+      displayWords();
+    };
+  </script>
+</body>
+</html>
