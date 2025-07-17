@@ -1,1 +1,1 @@
-<https://linobollansee.github.io/translate/>
+<https://linobollansee.github.io/RandWort/>
